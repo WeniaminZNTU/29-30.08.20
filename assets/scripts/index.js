@@ -1,193 +1,92 @@
-"use strict";
+'use strict';
 
-class ListNode {
-  constructor(value) {
-    this.value = value;
-    this.next = null;
+class Queue{
+  constructor(...items){
+    this._oldIndex = 0;
+    this._newIndex = 0;
+
+    for(let countItem of items){
+      this.push(countItem);
+    }
+  }
+
+
+  get size(){
+    return this._newIndex - this._oldIndex;
+  }
+
+  push(value){
+    this[this._newIndex++] = value;
+    return this.size;
+  }
+
+  pop(){
+    if(this.size === 0){
+      return;
+    }
+
+    const deletedElement = this[this._oldIndex];
+    delete this[this._oldIndex++];
+    return deletedElement;
+  }
+
+  peek(){
+    if(this.size === 0){
+      return;
+    }
+
+    return this[this._oldIndex];
   }
 }
 
-class LinkedList {
-  constructor() {
-    this.head = null;
-    this.length = 0;
-  }
 
-  AddNode(value) {
-    const node = new ListNode(value);
+const q1 = new Queue();
+q1.push('test1');
+q1.push('test3');
+q1.push('test5');
+q1.push('test7');
 
-    if (this.length === 0) {
-      this.head = node;
-    } else {
-      let current = this.head;
-      while (current.next) {
-        current = current.next;
-      }
-      current.next = node;
-    }
-    this.length++;
-  }
+const q2 = new Queue();
+q2.push('test0');
+q2.push('test2');
+q2.push('test4');
+q2.push('test6');
+q2.push('test7');
+q2.push('test8');
+q2.push('test9');
+q2.push('test10');
 
-  getNodeByIndex(index) {
-    if (index < 0 || index > this.length) {
-      throw new RangeError("Not in List");
-    }
+console.log(mergeQueue(q1,q2));
 
-    let current = this.head;
-    let count = 0;
+function mergeQueue(q2, q1){
+  let retQ = new Queue();
 
-    while (count < index) {
-      current = current.next;
-      count++;
-    }
+  const queueSize = (q1.size + q2.size);
 
-    return current;
-  }
-
-  [Symbol.iterator]() {
-    return new LinkedListIterator(this);
-  }
-}
-
-class LinkedListIterator {
-  constructor(list) {
-    this.iterable = list.head;
-  }
-
-  next() {
-    if (this.iterable) {
-      const value = this.iterable.value;
-      this.iterable = this.iterable.next;
-
-      return {
-        value,
-        done: true,
-      };
-    }
-    return { done: true };
-  }
-}
-
-const list = new LinkedList();
-
-list.AddNode("test1");
-list.AddNode("test2");
-list.AddNode("test3");
-list.AddNode("test4");
-list.AddNode("test5");
-
-class Stack{
-    constructor(maxSize = 1000){
-        if(typeof maxSize !== 'number'){
-            throw new TypeError('size must be a number');
-        }
-
-        if(maxSize < 1){
-            throw new TypeError('size must be a number');
-        }
-
-        this._maxSize = maxSize;
-        this._size = 0;
-    }
-
-    get maxSize(){
-        return this._maxSize;
-    }
-
-    get isEmpty(){
-        return this.length === 0;
-    }
-
-    get size(){
-        return this._size;
-    }
-
-    set size(value){
-        if(typeof value !== 'number'){
-            throw new TypeError('Uncorrect value');
-        }
-        this._size = value;
-    }
-
-    push(value){
-        if(this.size >= this.maxSize){
-            throw new TypeError('Stack owerflow');
-        }
-
-        this[this.size++] = value;
-        return this.size;
-    }
-
-    isEmpty(){
-        return this._size === 0;
-    }
-
-
-    pop(){
-        // if(this.isEmpty){
-        //     return;
-        // }
-
-        const lastItem = this[--this._size];
-        delete this[this._size];
-        return lastItem;
-    }
-    
-    peek(){
-        // if(this.isEmpty()){
-        //     return;
-        // }
-        return this[this._size -1];
-    }
-}
-
-/* function reverseString(string){
-    
-    const stack = new Stack(100);
-
-    let reverseStr = '';
-
-    for(let ch of string){
-        stack.push(ch);
-    }
-
-
-    for(let i = stack.size; i >= 0; i--){
-        reverseStr += stack.pop();
-    }
-
-    return reverseStr;
-}
- */
-
-
-function isBracketsCorrect(string){
-    if(string.length % 2 !== 0){
-        return false;
-    }
-
-    const stack = new Stack(string.length);
-
-    for(let ch of string){
-      if(ch === '('){
-        stack.push(ch);
-      }
-      else if(ch === ')'){
-        stack.pop();
+  for(let i = 0; i < queueSize; i++){
+    // debugger
+    if(i % 2 === 0){
+      if(q1.peek()){
+        retQ.push(q1.pop());
       }
       else{
-        return false
+        retQ.push(q2.pop());
       }
 
     }
-//есть стек запушенный скобками
-//debugger
 
-    return stack.isEmpty();
+    else{
+      if(q2.peek()){
+        retQ.push(q2.pop());
+      }
+      else{
+        retQ.push(q1.pop());
+      }
+    }
+    
+  }
+
+return retQ;
 }
-
-// console.log(isBracketsCorrect(''));
-
-
 
 
